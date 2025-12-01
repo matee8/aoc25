@@ -9,6 +9,8 @@ readme = "README.md"
 license = "MIT OR Apache-2.0"
 
 description = "Solutions for Advent of Code 2025"
+keywords = ["cli", "terminal"]
+categories = ["Algorithms", "Command line utilities", "Command-line interface"]
 
 [dependencies]
 
@@ -78,3 +80,5 @@ question_mark_used = "allow"
 separated_literal_suffix = "allow"
 map_err_ignore = "allow"
 arbitrary_source_item_ordering = "allow"
+default_numeric_fallback = "allow"
+print_stderr = "allow"
