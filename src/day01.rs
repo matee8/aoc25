@@ -36,6 +36,11 @@ pub fn main() {
         Ok(value) => println!("Solution for part 1: {value}"),
         Err(e) => eprintln!("Error: {e}"),
     }
+
+    match solve_part2(input) {
+        Ok(value) => println!("Solution for part 2: {value}"),
+        Err(e) => eprintln!("Error: {e}"),
+    }
 }
 
 fn solve_part1(input: &str) -> Result<i32, InputError> {
@@ -53,7 +58,9 @@ fn solve_part1(input: &str) -> Result<i32, InputError> {
             return Err(InputError::Number);
         };
 
-        position = update_position(position, direction, distance)?;
+        let (new_position, _) = update_position(position, direction, distance)?;
+
+        position = new_position;
 
         if position == 0 {
             zeros += 1;
@@ -63,26 +70,61 @@ fn solve_part1(input: &str) -> Result<i32, InputError> {
     Ok(zeros)
 }
 
-const fn update_position(
+// ugly bugly code duplication :c
+fn solve_part2(input: &str) -> Result<i32, InputError> {
+    let mut position = 50;
+    let mut zeros = 0;
+
+    for line in input.lines() {
+        let Some(direction) = line.chars().next() else {
+            return Err(InputError::Line);
+        };
+        let Some(distance) = line.get(1..) else {
+            return Err(InputError::Line);
+        };
+        let Ok(distance) = distance.parse() else {
+            return Err(InputError::Number);
+        };
+
+        let (new_position, new_zeros) =
+            update_position(position, direction, distance)?;
+
+        position = new_position;
+        zeros += new_zeros;
+    }
+
+    Ok(zeros)
+}
+
+fn update_position(
     current_position: i32,
     direction: char,
     distance: i32,
-) -> Result<i32, InputError> {
-    let delta = match direction {
-        'R' => distance,
-        'L' => -distance,
-        _ => return Err(InputError::Direction),
-    };
+) -> Result<(i32, i32), InputError> {
+    let mut new_position = current_position;
+    let mut zeros = 0;
 
-    let mut new_position = current_position + delta;
+    for _ in 0..distance {
+        match direction {
+            'R' => {
+                new_position += 1;
+                if new_position > 99 {
+                    new_position = 0;
+                }
+            }
+            'L' => {
+                new_position -= 1;
+                if new_position < 0 {
+                    new_position = 99;
+                }
+            }
+            _ => return Err(InputError::Direction),
+        }
 
-    while new_position < 0 {
-        new_position += 100;
+        if new_position == 0 {
+            zeros += 1;
+        }
     }
 
-    while new_position > 99 {
-        new_position -= 100;
-    }
-
-    Ok(new_position)
+    Ok((new_position, zeros))
 }
