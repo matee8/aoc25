@@ -1,6 +1,6 @@
 use std::env;
 
-use aoc25::day01;
+use aoc25::{day01, day02};
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -8,6 +8,7 @@ fn main() {
 
     match day {
         1 => day01::main(),
+        2 => day02::main(),
         _ => eprintln!("Day {day} not implemented yet."),
     }
 }
