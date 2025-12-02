@@ -87,29 +87,35 @@ fn update_position(
     direction: &str,
     distance: i32,
 ) -> Result<(i32, i32), InputError> {
-    let mut new_position = current_position;
-    let mut zeros = 0;
+    let mut zeros = distance / 100;
+    let delta = distance % 100;
 
-    for _ in 0..distance {
-        match direction {
-            "R" => {
-                new_position += 1;
-                if new_position > 99 {
-                    new_position = 0;
-                }
+    let new_position = match direction {
+        "R" => {
+            if current_position + delta > 100 {
+                zeros += 1;
             }
-            "L" => {
-                new_position -= 1;
-                if new_position < 0 {
-                    new_position = 99;
-                }
-            }
-            _ => return Err(InputError::Direction),
-        }
 
-        if new_position == 0 {
-            zeros += 1;
+            (current_position + delta) % 100
         }
+        "L" => {
+            if current_position > 0 && delta > current_position {
+                zeros += 1;
+            }
+
+            let mut value = current_position - delta;
+
+            if value < 0 {
+                value += 100;
+            }
+
+            value
+        }
+        _ => return Err(InputError::Direction),
+    };
+
+    if new_position == 0 {
+        zeros += 1;
     }
 
     Ok((new_position, zeros))
