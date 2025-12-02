@@ -5,7 +5,6 @@ use core::{
 
 #[derive(Debug)]
 enum InputError {
-    Line,
     Number,
     Direction,
 }
@@ -15,9 +14,6 @@ impl Error for InputError {}
 impl Display for InputError {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         match *self {
-            Self::Line => {
-                write!(f, "invalid line found in the input file")
-            }
             Self::Number => {
                 write!(f, "invalid number found in the input file")
             }
@@ -48,12 +44,7 @@ fn solve_part1(input: &str) -> Result<i32, InputError> {
     let mut zeros = 0;
 
     for line in input.lines() {
-        let Some(direction) = line.chars().next() else {
-            return Err(InputError::Line);
-        };
-        let Some(distance) = line.get(1..) else {
-            return Err(InputError::Line);
-        };
+        let (direction, distance) = line.split_at(1);
         let Ok(distance) = distance.parse() else {
             return Err(InputError::Number);
         };
@@ -76,12 +67,7 @@ fn solve_part2(input: &str) -> Result<i32, InputError> {
     let mut zeros = 0;
 
     for line in input.lines() {
-        let Some(direction) = line.chars().next() else {
-            return Err(InputError::Line);
-        };
-        let Some(distance) = line.get(1..) else {
-            return Err(InputError::Line);
-        };
+        let (direction, distance) = line.split_at(1);
         let Ok(distance) = distance.parse() else {
             return Err(InputError::Number);
         };
@@ -98,7 +84,7 @@ fn solve_part2(input: &str) -> Result<i32, InputError> {
 
 fn update_position(
     current_position: i32,
-    direction: char,
+    direction: &str,
     distance: i32,
 ) -> Result<(i32, i32), InputError> {
     let mut new_position = current_position;
@@ -106,13 +92,13 @@ fn update_position(
 
     for _ in 0..distance {
         match direction {
-            'R' => {
+            "R" => {
                 new_position += 1;
                 if new_position > 99 {
                     new_position = 0;
                 }
             }
-            'L' => {
+            "L" => {
                 new_position -= 1;
                 if new_position < 0 {
                     new_position = 99;
